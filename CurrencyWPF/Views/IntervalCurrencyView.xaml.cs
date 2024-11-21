@@ -18,7 +18,7 @@ namespace CurrencyWPF.Views
     /// <summary>
     /// Логика взаимодействия для IntervalCurrencyView.xaml
     /// </summary>
-    public partial class IntervalCurrencyView : UserControl
+    public partial class IntervalCurrencyView : Page
     {
         public IntervalCurrencyView()
         {

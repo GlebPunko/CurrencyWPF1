@@ -18,7 +18,7 @@ namespace CurrencyWPF.Views
     /// <summary>
     /// Логика взаимодействия для HomeView.xaml
     /// </summary>
-    public partial class HomeView : UserControl
+    public partial class HomeView : Page
     {
         public HomeView()
         {

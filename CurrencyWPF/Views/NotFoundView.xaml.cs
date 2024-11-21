@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CurrencyWPF.Views
 {
     /// <summary>
-    /// Логика взаимодействия для DayCurrencyView.xaml
+    /// Логика взаимодействия для NotFoundView.xaml
     /// </summary>
-    public partial class DayCurrencyView : Page
+    public partial class NotFoundView : Page
     {
-        public DayCurrencyView()
+        public NotFoundView()
         {
             InitializeComponent();
         }
