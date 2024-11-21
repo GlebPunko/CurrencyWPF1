@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
-namespace CurrencyWPF.Navigation
+namespace CurrencyWPF.CustomNavigation
 {
     public class PagesResolver : IPageResolver
     {
