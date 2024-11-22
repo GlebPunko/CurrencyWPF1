@@ -4,8 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CurrencyWPF.Views"
+             xmlns:vm="clr-namespace:CurrencyWPF.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <Page.DataContext>
+        <vm:IntervalCurrencuViewModel />
+    </Page.DataContext>
+    
     <Page.Resources>
         <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#4CAF50"/>
@@ -36,7 +41,7 @@
             <DatePicker x:Name="endDatePicker" SelectedDate="{Binding EndDate}" />
         </StackPanel>
 
-        <DataGrid Grid.Row="1" Grid.Column="0" x:Name="dataGrid" AutoGenerateColumns="False" ItemsSource="{Binding ExchangeRates}" Margin="10" CanUserAddRows="False" CanUserDeleteRows="False">
+        <DataGrid Grid.Row="1" Grid.Column="0" x:Name="dataGrid" AutoGenerateColumns="False" ItemsSource="{Binding RateShort}" Margin="10" CanUserAddRows="False" CanUserDeleteRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" />
                 <DataGridTextColumn Header="Cur_Scale" Binding="{Binding Cur_Scale}" />
@@ -48,13 +53,16 @@
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Orientation="Vertical" Margin="10">
             <Button Content="Загрузить курсы"  
                     Style="{StaticResource ButtonStyle}" 
-                    Margin="0,0,0,10" />
+                    Margin="0,0,0,10" 
+                    Command="{Binding LoadIntervalRatesShortCommand}"/>
             <Button Content="Сохранить в JSON"  
                     Style="{StaticResource ButtonStyle}" 
-                    Margin="0,0,0,10" />
+                    Margin="0,0,0,10"
+                    Command="{Binding SaveToJsonCommand}"/>
             <Button Content="Загрузить из JSON" 
                     Style="{StaticResource ButtonStyle}" 
-                    Margin="0,0,0,10" />
+                    Margin="0,0,0,10"
+                    Command="{Binding LoadFromJsonCommand}"/>
         </StackPanel>
     </Grid>
 </Page>

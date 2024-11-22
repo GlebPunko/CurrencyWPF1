@@ -16,13 +16,26 @@ namespace CurrencyWPF.Services
         {
             _httpClient = new HttpClient();
         }
+
+        public async Task<IEnumerable<Currency>> GetCurrenciesInfo()
+        {
+            var currencyList = await _httpClient.GetStringAsync("https://api.nbrb.by/exrates/currencies");
+
+            if (string.IsNullOrEmpty(currencyList))
+                return null;
+
+            var currencies = JsonConvert.DeserializeObject<IEnumerable<Currency>>(currencyList);
+
+            return currencies;
+        }
+
         public async Task<IEnumerable<RateShort>> GetIntervalExchangeRate(DateTime startDate, DateTime endDate)
         {
             if (startDate < endDate || startDate == default || endDate == default)
                 return null;
 
             var rateShortsJson = await _httpClient
-                .GetStringAsync($"https://api.nbrb.by/exrates/rates/dynamics/440?startDate={startDate.Date}&endDate={endDate.Date}");
+                .GetStringAsync($"https://api.nbrb.by/exrates/rates/dynamics/440?startDate={startDate.Date:yyyy-MM-dd}&endDate={endDate.Date:yyyy-MM-dd}");
 
             if (string.IsNullOrEmpty(rateShortsJson))
                 return null;

@@ -98,7 +98,7 @@ namespace CurrencyWPF.ViewModels
             {
                 try
                 {
-                    await _fileService.SaveJsonFile(saveFileDialog.FileName, Rates);
+                    await _fileService.SaveDayCurrencyJsonFile(saveFileDialog.FileName, Rates);
 
                     MessageBox.Show("Данные успешно сохранены в JSON файл.");
                 }
@@ -122,7 +122,7 @@ namespace CurrencyWPF.ViewModels
             {
                 try
                 {
-                    var exchangeRates = await _fileService.OpenJsonFile(openFileDialog.FileName);
+                    var exchangeRates = await _fileService.OpenDayCurrencyJsonFile(openFileDialog.FileName);
 
                     Rates = exchangeRates;
                     SelectedDate = exchangeRates.First().Date;
