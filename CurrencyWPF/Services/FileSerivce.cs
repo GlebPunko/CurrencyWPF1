@@ -3,6 +3,7 @@ using CurrencyWPF.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace CurrencyWPF.Services
 {
     public class FileService : IFileService
     {
-        public async Task<IEnumerable<SaveRate>> OpenJsonFile(string filePath)
+        public async Task<ObservableCollection<Rate>> OpenJsonFile(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 return null;
@@ -24,7 +25,7 @@ namespace CurrencyWPF.Services
                 if (string.IsNullOrEmpty(text))
                     return null;
 
-                var result = JsonConvert.DeserializeObject<IEnumerable<SaveRate>>(text);
+                var result = JsonConvert.DeserializeObject<ObservableCollection<Rate>>(text);
 
                 if (result.Count() == 0)
                     return null;
@@ -33,12 +34,14 @@ namespace CurrencyWPF.Services
             }
         }
 
-        public async Task<bool> SaveJsonFile(string savePath, string json)
+        public async Task<bool> SaveJsonFile(string savePath, ObservableCollection<Rate> rates)
         {
-            if (string.IsNullOrEmpty(savePath) || string.IsNullOrEmpty(json))
+            if (string.IsNullOrEmpty(savePath) || rates.Count == 0)
                 return false;
 
-            using (StreamWriter stream = new StreamWriter(savePath + $@"\currency_saved_{DateTime.Now.Date}"))
+            var json = JsonConvert.SerializeObject(rates);
+
+            using (StreamWriter stream = new StreamWriter(savePath))
             {
                 await stream.WriteAsync(json);
 

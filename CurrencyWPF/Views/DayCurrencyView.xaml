@@ -55,10 +55,12 @@
                     Command="{Binding LoadDayRatesCommand}" />
             <Button Content="Сохранить в JSON"  
                  Style="{StaticResource ButtonStyle}" 
-                 Margin="0,0,0,10" />
+                 Margin="0,0,0,10"
+                 Command="{Binding SaveToJsonCommand}" />
             <Button Content="Загрузить из JSON" 
                  Style="{StaticResource ButtonStyle}" 
-                 Margin="0,0,0,10" />
+                 Margin="0,0,0,10"
+                 Command="{Binding LoadFromJsonCommand}" />
         </StackPanel>
     </Grid>
 </Page>
