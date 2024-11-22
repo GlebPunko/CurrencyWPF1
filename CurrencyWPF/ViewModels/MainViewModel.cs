@@ -37,7 +37,7 @@ namespace CurrencyWPF.ViewModels
             }
         }
 
-        public ICommand GoToPage1Command
+        public ICommand GoToHomeCommand
         {
             get
             {
@@ -46,41 +46,41 @@ namespace CurrencyWPF.ViewModels
             set
             {
                 _goToHomeCommand = value;
-                RaisePropertyChanged("GoToPage1Command");
+                RaisePropertyChanged("GoToHomeCommand");
             }
         }
 
-        public ICommand GoToPage2Command
+        public ICommand GoToDayCurrencyCommand
         {
             get { return _goToDayCurrencyCommand; }
             set
             {
                 _goToDayCurrencyCommand = value;
-                RaisePropertyChanged("GoToPage2Command");
+                RaisePropertyChanged("GoToDayCurrencyCommand");
             }
         }
 
-        public ICommand GoToPage3Command
+        public ICommand GoToIntervalCurrencyCommand
         {
             get { return _goToIntervalCurrencyCommand; }
             set
             {
                 _goToIntervalCurrencyCommand = value;
-                RaisePropertyChanged("GoToPage3Command");
+                RaisePropertyChanged("GoToIntervalCurrencyCommand");
             }
         }
 
-        public INotifyPropertyChanged Page1ViewModel
+        public INotifyPropertyChanged HomeViewModel
         {
             get { return _homeViewModel; }
         }
 
-        public INotifyPropertyChanged Page2ViewModel
+        public INotifyPropertyChanged DayCurrencyViewModel
         {
             get { return _dayCurrencyViewModel; }
         }
 
-        public INotifyPropertyChanged Page3ViewModel
+        public INotifyPropertyChanged IntervalCurrencyViewModel
         {
             get { return _intervalCurrencyViewModel; }
         }
@@ -102,11 +102,11 @@ namespace CurrencyWPF.ViewModels
 
             GoToPathCommand = new RelayCommand<string>(GoToPathCommandExecute);
 
-            GoToPage1Command = new RelayCommand<INotifyPropertyChanged>(GoToHomeCommandExecute);
+            GoToHomeCommand = new RelayCommand<INotifyPropertyChanged>(GoToHomeCommandExecute);
 
-            GoToPage2Command = new RelayCommand<INotifyPropertyChanged>(GoToDayCurrencyCommandExecute);
+            GoToDayCurrencyCommand = new RelayCommand<INotifyPropertyChanged>(GoToDayCurrencyCommandExecute);
 
-            GoToPage3Command = new RelayCommand<INotifyPropertyChanged>(GoToIntervalCurrencyCommandExecute);
+            GoToIntervalCurrencyCommand = new RelayCommand<INotifyPropertyChanged>(GoToIntervalCurrencyCommandExecute);
         }
 
         private void GoToPathCommandExecute(string alias)
@@ -121,17 +121,17 @@ namespace CurrencyWPF.ViewModels
 
         private void GoToHomeCommandExecute(INotifyPropertyChanged viewModel)
         {
-            Navigation.Navigate(Navigation.HomeAlias, Page1ViewModel);
+            Navigation.Navigate(Navigation.HomeAlias, HomeViewModel);
         }
 
         private void GoToDayCurrencyCommandExecute(INotifyPropertyChanged viewModel)
         {
-            Navigation.Navigate(Navigation.DayCurrencyAlias, Page1ViewModel);
+            Navigation.Navigate(Navigation.DayCurrencyAlias, DayCurrencyViewModel);
         }
 
         private void GoToIntervalCurrencyCommandExecute(INotifyPropertyChanged viewModel)
         {
-            Navigation.Navigate(Navigation.IntervalCurrencyAlias, Page1ViewModel);
+            Navigation.Navigate(Navigation.IntervalCurrencyAlias, IntervalCurrencyViewModel);
         }
     }
 }

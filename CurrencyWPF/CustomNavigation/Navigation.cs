@@ -22,11 +22,11 @@ namespace CurrencyWPF.CustomNavigation
             {
                 if (Instance._navService != null)
                 {
-                    Instance._navService.Navigated -= Instance._navService_Navigated;
+                    Instance._navService.Navigated -= Instance.NavService_Navigated;
                 }
 
                 Instance._navService = value;
-                Instance._navService.Navigated += Instance._navService_Navigated;
+                Instance._navService.Navigated += Instance.NavService_Navigated;
             }
         }
 
@@ -62,7 +62,7 @@ namespace CurrencyWPF.CustomNavigation
             Navigate(uri, null);
         }
 
-        void _navService_Navigated(object sender, NavigationEventArgs e)
+        void NavService_Navigated(object sender, NavigationEventArgs e)
         {
             var page = e.Content as Page;
 

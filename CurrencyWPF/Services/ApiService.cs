@@ -38,7 +38,7 @@ namespace CurrencyWPF.Services
                 onDate = DateTime.Now;
 
             var ratesJson = await _httpClient
-                .GetStringAsync($"https://api.nbrb.by/exrates/rates?ondate={onDate.Date}&periodicity=0");
+                .GetStringAsync($"https://api.nbrb.by/exrates/rates?ondate={onDate.Date:yyyy-MM-dd}&periodicity=0");
 
             if (string.IsNullOrEmpty(ratesJson))
                 return null;

@@ -6,6 +6,21 @@
         xmlns:local="clr-namespace:CurrencyWPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="35"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -14,9 +29,18 @@
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
             <StackPanel>
-                <Button Content="Page 1" Command="{Binding GoToPage1Command}" CommandParameter="{Binding Page1ViewModel}"/>
-                <Button Content="Page 2" Command="{Binding GoToPage2Command}" CommandParameter="{Binding Page2ViewModel}"/>
-                <Button Content="Page 3" Command="{Binding GoToPage3Command}" CommandParameter="{Binding Page3ViewModel}"/>
+                <Button Content="Главная" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Command="{Binding GoToHomeCommand}" 
+                        CommandParameter="{Binding HomeViewModel}" />
+                <Button Content="Валюты по дню" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Command="{Binding GoToDayCurrencyCommand}" 
+                        CommandParameter="{Binding DayCurrencyViewModel}"/>
+                <Button Content="Интервал валют" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Command="{Binding GoToIntervalCurrencyCommand}" 
+                        CommandParameter="{Binding IntervalCurrencyViewModel}"/>
             </StackPanel>
         </ScrollViewer>
 

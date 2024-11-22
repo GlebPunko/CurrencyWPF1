@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace CurrencyWPF.ViewModels
 {
@@ -7,14 +9,17 @@ namespace CurrencyWPF.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void RaisePropertyChanged(string propertyName)
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (string.IsNullOrWhiteSpace(propertyName))
-            {
-                return;
-            }
-
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            RaisePropertyChanged(propertyName);
+            return true;
         }
     }
 }
