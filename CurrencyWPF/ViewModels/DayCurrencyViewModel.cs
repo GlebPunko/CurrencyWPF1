@@ -122,10 +122,9 @@ namespace CurrencyWPF.ViewModels
             {
                 try
                 {
-                    var exchangeRates = await _fileService.OpenDayCurrencyJsonFile(openFileDialog.FileName);
+                    Rates = await _fileService.OpenDayCurrencyJsonFile(openFileDialog.FileName);
 
-                    Rates = exchangeRates;
-                    SelectedDate = exchangeRates.First().Date;
+                    SelectedDate = Rates.First().Date;
 
                     MessageBox.Show("Данные успешно загружены из JSON файла.");
                 }

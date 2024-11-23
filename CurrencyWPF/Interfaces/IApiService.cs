@@ -8,8 +8,8 @@ namespace CurrencyWPF.Interfaces
 {
     public interface IApiService
     {
-        Task<IEnumerable<Currency>> GetCurrenciesInfo();
-        Task<IEnumerable<Rate>> GetOnDayExchangeRate(DateTime onDate);
-        Task<IEnumerable<RateShort>> GetIntervalExchangeRate(DateTime startDate, DateTime endDate);
+        Task<ObservableCollection<Currency>> GetCurrenciesInfo();
+        Task<ObservableCollection<Rate>> GetOnDayExchangeRate(DateTime onDate);
+        Task<ObservableCollection<Rate>> GetIntervalExchangeRate(DateTime startDate, DateTime endDate, int id);
     }
 }

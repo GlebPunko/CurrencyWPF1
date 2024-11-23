@@ -32,7 +32,7 @@ namespace CurrencyWPF.Services
             }
         }
 
-        public async Task<ObservableCollection<RateShort>> OpenIntervalJsonFile(string filePath)
+        public async Task<ObservableCollection<Rate>> OpenIntervalJsonFile(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 return null;
@@ -44,7 +44,7 @@ namespace CurrencyWPF.Services
                 if (string.IsNullOrEmpty(text))
                     return null;
 
-                var result = JsonConvert.DeserializeObject<ObservableCollection<RateShort>>(text);
+                var result = JsonConvert.DeserializeObject<ObservableCollection<Rate>>(text);
 
                 if (result.Count() == 0)
                     return null;
@@ -68,7 +68,7 @@ namespace CurrencyWPF.Services
             }
         }
 
-        public async Task<bool> SaveIntervalCurrencyJsonFile(string savePath, ObservableCollection<RateShort> shortRates)
+        public async Task<bool> SaveIntervalCurrencyJsonFile(string savePath, ObservableCollection<Rate> shortRates)
         {
             if (string.IsNullOrEmpty(savePath) || shortRates.Count == 0)
                 return false;

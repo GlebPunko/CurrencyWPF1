@@ -3,8 +3,10 @@ using CurrencyWPF.Services;
 using CurrencyWPF.Services.Commands;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Input;
 
@@ -17,12 +19,14 @@ namespace CurrencyWPF.ViewModels
 
         private DateTime _startDate;
         private DateTime _endDate;
-        private string _currentCurrencyName;
-        private Currency _currentCurrency;
+        private Currency _selectedCurrency;
 
-        private ObservableCollection<RateShort> _rateShorts;
+        private ObservableCollection<Rate> _rates;
         private ObservableCollection<Currency> _currencies;
+        private ObservableCollection<Rate> _rateDay;
         private bool _isLoading;
+        private bool _isInitializedDayRates;
+        private bool _isInitializedCurrencies;
 
         public IntervalCurrencuViewModel()
         {
@@ -31,11 +35,19 @@ namespace CurrencyWPF.ViewModels
 
             _startDate = DateTime.Now;
             _endDate = DateTime.Now;
-            _currentCurrency = new Currency();
+            _isInitializedCurrencies = false;
+            _isInitializedDayRates = false;
 
+            LoadCurrenciesCommand = new RelayCommand(LoadCurrencies);
             LoadIntervalRatesShortCommand = new RelayCommand(LoadIntervalShortRates);
             SaveToJsonCommand = new RelayCommand(SaveToJson);
             LoadFromJsonCommand = new RelayCommand(LoadFromJson);
+
+            if(!_isInitializedCurrencies)
+            {
+                _isInitializedCurrencies = true;
+                LoadCurrencies();
+            }   
         }
 
         public DateTime StartDate
@@ -58,33 +70,10 @@ namespace CurrencyWPF.ViewModels
             }
         }
 
-        public string CurrentNameCurrency
+        public ObservableCollection<Rate> Rates
         {
-            get => _currentCurrencyName;
-            set
-            {
-                _currentCurrencyName = value;
-                _currentCurrency = _currencies.Select(x => x).Where(x => x.Cur_Name == value).FirstOrDefault(); ;
-                 
-                RaisePropertyChanged();
-            }
-        }
-
-        public Currency CurrentCurrency
-        {
-            get => _currentCurrency;
-            set
-            {
-                _currentCurrency = value;
-
-                RaisePropertyChanged();
-            }
-        }
-
-        public ObservableCollection<RateShort> RateShort
-        {
-            get => _rateShorts;
-            set => SetProperty(ref _rateShorts, value);
+            get => _rates;
+            set => SetProperty(ref _rates, value);
         }
 
         public ObservableCollection<Currency> Currencies
@@ -93,15 +82,63 @@ namespace CurrencyWPF.ViewModels
             set => SetProperty(ref _currencies, value);
         }
 
+        public ObservableCollection<Rate> DayRate
+        {
+            get => _rateDay;
+            set
+            {
+                SetProperty(ref _rateDay, value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public Currency SelectedCurrency
+        {
+            get => _selectedCurrency;
+            set
+            {
+                _selectedCurrency = value;
+                RaisePropertyChanged();
+                LoadIntervalShortRates();
+            }
+        }
+
         public bool IsLoading
         {
             get => _isLoading;
             set => SetProperty(ref _isLoading, value);
         }
 
+        public ICommand LoadCurrenciesCommand { get; }
         public ICommand LoadIntervalRatesShortCommand { get; }
         public ICommand SaveToJsonCommand { get; }
         public ICommand LoadFromJsonCommand { get; }
+
+        private async void LoadCurrencies()
+        {
+            if (!_isInitializedDayRates)
+                LoadExchangeRates();
+
+            IsLoading = true;
+
+            try
+            {
+                Currencies = await _apiService.GetCurrenciesInfo();
+
+                var exchangeRatesIds = new HashSet<int>(DayRate.Select(r => r.Cur_ID));
+                var currenciesWithExchangeRates = Currencies.Where(c => exchangeRatesIds.Contains(c.Cur_ID)).ToList();
+
+                Currencies = new ObservableCollection<Currency>(currenciesWithExchangeRates);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки валют: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         private async void LoadIntervalShortRates()
         {
@@ -109,9 +146,17 @@ namespace CurrencyWPF.ViewModels
 
             try
             {
-                var rateShort = await _apiService.GetIntervalExchangeRate(_startDate, _endDate);
+                Rates = await _apiService.GetIntervalExchangeRate(_startDate, _endDate, SelectedCurrency.Cur_ID);
 
-                RateShort = new ObservableCollection<RateShort>(rateShort);
+                var enrichedRates = Rates.Select(x =>
+                {
+                    x.Cur_Scale = SelectedCurrency.Cur_Scale;
+                    x.Cur_Name = SelectedCurrency.Cur_Name;
+
+                    return x;
+                }).ToList();
+
+                Rates = new ObservableCollection<Rate>(enrichedRates);
             }
             catch (Exception ex)
             {
@@ -125,7 +170,7 @@ namespace CurrencyWPF.ViewModels
 
         private async void SaveToJson()
         {
-            if (RateShort == null || RateShort.Count == 0)
+            if (Rates == null || Rates.Count == 0)
             {
                 MessageBox.Show("Нет данных для сохранения.");
 
@@ -143,7 +188,7 @@ namespace CurrencyWPF.ViewModels
             {
                 try
                 {
-                    await _fileService.SaveIntervalCurrencyJsonFile(saveFileDialog.FileName, RateShort);
+                    await _fileService.SaveIntervalCurrencyJsonFile(saveFileDialog.FileName, Rates);
 
                     MessageBox.Show("Данные успешно сохранены в JSON файл.");
                 }
@@ -169,9 +214,10 @@ namespace CurrencyWPF.ViewModels
                 {
                     var exchangeRates = await _fileService.OpenIntervalJsonFile(openFileDialog.FileName);
 
-                    RateShort = exchangeRates;
+                    Rates = exchangeRates;
                     StartDate = exchangeRates.First().Date;
                     EndDate = exchangeRates.Last().Date;
+                    SelectedCurrency = Currencies.FirstOrDefault(x => x.Cur_ID == exchangeRates.First().Cur_ID);
 
                     MessageBox.Show("Данные успешно загружены из JSON файла.");
                 }
@@ -179,6 +225,28 @@ namespace CurrencyWPF.ViewModels
                 {
                     MessageBox.Show($"Ошибка загрузки данных: {ex.Message}");
                 }
+            }
+        }
+
+        private async void LoadExchangeRates()
+        {
+            if (_isInitializedDayRates)
+                return;
+
+            IsLoading = true;
+
+            try
+            {
+                DayRate = await _apiService.GetOnDayExchangeRate(DateTime.Now.Date);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+                _isInitializedDayRates = true;
             }
         }
     }

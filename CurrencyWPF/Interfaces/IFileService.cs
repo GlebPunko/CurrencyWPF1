@@ -8,7 +8,7 @@ namespace CurrencyWPF.Interfaces
     {
         Task<bool> SaveDayCurrencyJsonFile(string savePath, ObservableCollection<Rate> rates);
         Task<ObservableCollection<Rate>> OpenDayCurrencyJsonFile(string filePath);
-        Task<bool> SaveIntervalCurrencyJsonFile(string savePath, ObservableCollection<RateShort> rates);
-        Task<ObservableCollection<RateShort>> OpenIntervalJsonFile(string filePath);
+        Task<bool> SaveIntervalCurrencyJsonFile(string savePath, ObservableCollection<Rate> rates);
+        Task<ObservableCollection<Rate>> OpenIntervalJsonFile(string filePath);
     }
 }

@@ -3,6 +3,7 @@ using CurrencyWPF.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -17,35 +18,37 @@ namespace CurrencyWPF.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<IEnumerable<Currency>> GetCurrenciesInfo()
+        public async Task<ObservableCollection<Currency>> GetCurrenciesInfo()
         {
             var currencyList = await _httpClient.GetStringAsync("https://api.nbrb.by/exrates/currencies");
 
             if (string.IsNullOrEmpty(currencyList))
                 return null;
 
-            var currencies = JsonConvert.DeserializeObject<IEnumerable<Currency>>(currencyList);
+            var currencies = JsonConvert.DeserializeObject<ObservableCollection<Currency>>(currencyList);
 
             return currencies;
         }
 
-        public async Task<IEnumerable<RateShort>> GetIntervalExchangeRate(DateTime startDate, DateTime endDate)
+        public async Task<ObservableCollection<Rate>> GetIntervalExchangeRate(DateTime startDate, DateTime endDate, int id)
         {
-            if (startDate < endDate || startDate == default || endDate == default)
+            if (startDate > endDate || startDate == default || endDate == default)
                 return null;
-
+            string s = $"{startDate.Date:yyyy-MM-dd}";
+            string e = $"{endDate.Date:yyyy-MM-dd}";
+            string link = $"https://api.nbrb.by/exrates/rates/dynamics/{id}?startDate={s}&endDate={e}";
             var rateShortsJson = await _httpClient
-                .GetStringAsync($"https://api.nbrb.by/exrates/rates/dynamics/440?startDate={startDate.Date:yyyy-MM-dd}&endDate={endDate.Date:yyyy-MM-dd}");
+                .GetStringAsync(link);
 
             if (string.IsNullOrEmpty(rateShortsJson))
                 return null;
 
-            var rateShorts = JsonConvert.DeserializeObject<IEnumerable<RateShort>>(rateShortsJson);
+            var rateShorts = JsonConvert.DeserializeObject<ObservableCollection<Rate>>(rateShortsJson);
 
             return rateShorts;
         }
 
-        public async Task<IEnumerable<Rate>> GetOnDayExchangeRate(DateTime onDate)
+        public async Task<ObservableCollection<Rate>> GetOnDayExchangeRate(DateTime onDate)
         {
             if (onDate == default)
                 onDate = DateTime.Now;
@@ -53,10 +56,10 @@ namespace CurrencyWPF.Services
             var ratesJson = await _httpClient
                 .GetStringAsync($"https://api.nbrb.by/exrates/rates?ondate={onDate.Date:yyyy-MM-dd}&periodicity=0");
 
-            if (string.IsNullOrEmpty(ratesJson))
+            if (string.IsNullOrEmpty(ratesJson) || ratesJson == "[]")
                 return null;
 
-            var rates = JsonConvert.DeserializeObject<IEnumerable<Rate>>(ratesJson);
+            var rates = JsonConvert.DeserializeObject<ObservableCollection<Rate>>(ratesJson);
 
             return rates;
         }
